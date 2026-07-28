@@ -1,0 +1,27 @@
+name: first Workflow
+on: [workflow_dispatch]
+
+jobs:
+  rclone-job:
+    runs-on: ubuntu-latest
+    container: rclone/rclone:latest 
+    
+    steps:        
+      - name: Run Rclone
+        env:          
+          # We tell rclone to look in the RAM disk for the config
+          RCLONE_CONFIG: /dev/shm/rclone.conf
+          
+          # Your base64 string from secrets
+          B64_CONFIG: ${{ secrets.RCLONE_B64_CONFIG }}
+        run: |
+          # 1. Decode the Base64 string directly into the RAM disk
+          # The rclone alpine container uses busybox, so base64 -d works perfectly.
+          echo "$B64_CONFIG" | base64 -d > $RCLONE_CONFIG
+          
+          # 2. Run your rclone commands
+          # It will silently decrypt the config in memory using RCLONE_CONFIG_PASS
+          for letter in {Z..Y}; do rclone copy --fast-list --stats 5s --stats-one-line --log-level INFO --include "/${letter}**" --ignore-case --checkers 2 --tpslimit 5 od:/MyPersonalBackup_API_Full/KOGA gg_2:/MyPersonalBackup_API_Full/KOGA ; done
+          
+          # 3. Clean up the RAM disk immediately after (optional, but good practice)
+          rm -f $RCLONE_CONFIG
