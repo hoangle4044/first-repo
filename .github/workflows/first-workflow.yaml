@@ -21,7 +21,7 @@ jobs:
           
           # 2. Run your rclone commands
           # It will silently decrypt the config in memory using RCLONE_CONFIG_PASS
-          for letter in {Z..Y}; do rclone copy --fast-list --stats 5s --stats-one-line --log-level INFO --include "/${letter}**" --ignore-case --checkers 2 --tpslimit 5 od:/MyPersonalBackup_API_Full/KOGA gg_2:/MyPersonalBackup_API_Full/KOGA ; done
+          for letter in {Z..Y}; do rclone copy od:/MyPersonalBackup_API_Full/KOGA gg_2:/Backup/MyPersonalBackup_API_Full/KOGA --fast-list --stats 5s --stats-one-line --log-level INFO --include "/${letter}**" --ignore-case --checkers 2 --tpslimit 5; done
           
           # 3. Clean up the RAM disk immediately after (optional, but good practice)
           rm -f $RCLONE_CONFIG
